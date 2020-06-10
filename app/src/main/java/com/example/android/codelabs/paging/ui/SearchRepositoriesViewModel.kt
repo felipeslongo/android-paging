@@ -31,7 +31,7 @@ import com.example.android.codelabs.paging.model.RepoSearchResult
 class SearchRepositoriesViewModel(private val repository: GithubRepository) : ViewModel() {
 
     companion object {
-        private const val VISIBLE_THRESHOLD = 5
+        const val VISIBLE_THRESHOLD = 5
     }
 
     private val queryLiveData = MutableLiveData<String>()
@@ -51,12 +51,10 @@ class SearchRepositoriesViewModel(private val repository: GithubRepository) : Vi
         queryLiveData.postValue(queryString)
     }
 
-    fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
-        if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            val immutableQuery = lastQueryValue()
-            if (immutableQuery != null) {
-                repository.requestMore(immutableQuery)
-            }
+    fun loadMoreData() {
+        val immutableQuery = lastQueryValue()
+        if (immutableQuery != null) {
+            repository.requestMore(immutableQuery)
         }
     }
 

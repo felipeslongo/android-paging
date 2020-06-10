@@ -28,6 +28,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.android.codelabs.paging.Injection
 import com.example.android.codelabs.paging.R
+import com.example.android.codelabs.paging.RecyclerViewScrollThresholdListener
 import com.example.android.codelabs.paging.model.Repo
 import kotlinx.android.synthetic.main.activity_search_repositories.*
 
@@ -114,17 +115,9 @@ class SearchRepositoriesActivity : AppCompatActivity() {
     }
 
     private fun setupScrollListener() {
-        val layoutManager = list.layoutManager as androidx.recyclerview.widget.LinearLayoutManager
-        list.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val totalItemCount = layoutManager.itemCount
-                val visibleItemCount = layoutManager.childCount
-                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-
-                viewModel.listScrolled(visibleItemCount, lastVisibleItem, totalItemCount)
-            }
-        })
+        RecyclerViewScrollThresholdListener(list).addOnThresholdListener(SearchRepositoriesViewModel.VISIBLE_THRESHOLD){
+            viewModel.loadMoreData()
+        }
     }
 
     companion object {
