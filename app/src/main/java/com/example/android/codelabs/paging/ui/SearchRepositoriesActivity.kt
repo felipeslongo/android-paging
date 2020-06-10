@@ -25,6 +25,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.android.codelabs.paging.Injection
 import com.example.android.codelabs.paging.R
@@ -48,7 +49,6 @@ class SearchRepositoriesActivity : AppCompatActivity() {
         // add dividers between RecyclerView's row items
         val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         list.addItemDecoration(decoration)
-        setupScrollListener()
 
         initAdapter()
         val query = savedInstanceState?.getString(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
@@ -63,12 +63,12 @@ class SearchRepositoriesActivity : AppCompatActivity() {
 
     private fun initAdapter() {
         list.adapter = adapter
-        viewModel.repos.observe(this, Observer<List<Repo>> {
+        viewModel.repos.observe(this, Observer {
             Log.d("Activity", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
             adapter.submitList(it)
         })
-        viewModel.networkErrors.observe(this, Observer<String> {
+        viewModel.networkErrors.observe(this, Observer {
             Toast.makeText(this, "\uD83D\uDE28 Wooops $it", Toast.LENGTH_LONG).show()
         })
     }
@@ -111,12 +111,6 @@ class SearchRepositoriesActivity : AppCompatActivity() {
         } else {
             emptyList.visibility = View.GONE
             list.visibility = View.VISIBLE
-        }
-    }
-
-    private fun setupScrollListener() {
-        RecyclerViewScrollThresholdListener(list).addOnThresholdListener(SearchRepositoriesViewModel.VISIBLE_THRESHOLD){
-            viewModel.loadMoreData()
         }
     }
 
